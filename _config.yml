@@ -1,14 +1,13 @@
 # Site settings
-title: Martin Krasser's Blog
+title: Florin Bidian's Blog
 home: Blog
-header-img: img/distributed.png
+header-img: img/distributed.jpg
 description: ""
 baseurl: ""
-url: "http://krasserm.github.io"
+url: "http://bidianf.github.io"
 resume: true
-twitter_username: mrt1nz
-github_username:  krasserm
-linkedin_username: krasserm
+github_username:  bidianf
+linkedin_username: florin-bidian
 
 # Build settings
 markdown: kramdown
