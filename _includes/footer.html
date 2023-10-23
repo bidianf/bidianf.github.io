@@ -6,22 +6,14 @@
                 <ul class="list-inline text-center">
                     {% if site.resume %}
                     <li>
-                        <a href="http://martin-krasser.com/resume/resume.pdf">
+                        <a href="https://drive.google.com/open?id=1nHral1DJRgAXUpP1R0GevKobj2dk3nrI">
                         <span class="fa-stack fa-lg">
                                 <i class="fa fa-user fa-stack-1x"></i>
                             </span>
                         </a>
                     </li>
                     {% endif %}
-                    {% if site.twitter_username %}
-                    <li>
-                        <a href="https://twitter.com/{{ site.twitter_username }}">
-                            <span class="fa-stack fa-lg">
-                                <i class="fa fa-twitter fa-stack-1x"></i>
-                            </span>
-                        </a>
-                    </li>
-                    {% endif %}
+                    
                     {% if site.github_username %}
                     <li>
                         <a href="https://github.com/{{ site.github_username }}">
@@ -39,14 +31,7 @@
                             </span>
                         </a>
                     </li>
-                    {% endif %}
-                    <li>
-                        <a href="{{ "/atom.xml" | prepend: site.baseurl }}">
-                            <span class="fa-stack fa-lg">
-                                <i class="fa fa-rss fa-stack-1x"></i>
-                            </span>
-                        </a>
-                    </li>
+                    {% endif %}                    
                 </ul>
             </div>
         </div>
