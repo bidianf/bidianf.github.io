@@ -5,7 +5,7 @@ header-img: img/distributed.jpg
 description: ""
 baseurl: ""
 url: "http://bidianf.github.io"
-resume: true
+resume: false
 github_username:  bidianf
 linkedin_username: florin-bidian
 
