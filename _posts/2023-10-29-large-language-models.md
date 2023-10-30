@@ -19,7 +19,9 @@ are *generative*. The distribution of a sequence (corpus) of
 words/tokens[^1] $w_{1:n} := (w_1,\ldots,w_n)$ is determined by the
 conditional distributions of the next word in the sequence given the
 previous words,
+
  $$P(w_{1:n}) = \prod_{k=1}^n P(w_k|w_{1:(k-1)}).$$ 
+
 If we
 learn these conditional distributions, to generate text is enough to
 sample from the distribution of the next word conditional on the
@@ -88,7 +90,7 @@ components (or other more refined methods).
 
 The current state of the art LLMs learn a $p \times v$ embedding matrix
 $E$ by treating the elements of $E$ as additional parameters and convert
-a one-hot vector $\mathbb{1}_w \in \mathbf{R}^v$ for word $w$ into its
+a one-hot vector $\mathbf{1}_w \in \mathbb{R}^v$ for word $w$ into its
 embedding $E \mathbf{1}_w  \in \mathbb{R}^p$.
 
 ## A blueprint for LLMs
@@ -107,9 +109,11 @@ build Markovian LLMs with sliding window of $L$ words:
 
 -   Output the probability mass function[^3]
     $y_{t} \in \Delta(\mathcal{V}) \subset \mathbb{R}^v$ of the next word $w_t$ based on its (cosine) similarity to $z$,
+
     $$y_t:=\text{softmax}(\beta \langle e(w'), z_t \rangle  \; : \; w' \in \mathcal{V} ) \in \Delta(V).$$
 
 In other words,
+
 $$y_t(w) = P(w_t = w|w_{(t-L):(t-1)}) = \frac{e^{\beta \langle e(w), z_t \rangle}}{\sum_{w' \in \mathcal{V}} e^{\beta \langle e(w'), z \rangle } }.$$
 
 The hyperparameter $\beta$ is the inverse *temperature* parameter
@@ -153,7 +157,9 @@ stochastic gradient descent. We start with an initial guess for the
 parameters (usually independent normal with mean zero and variance
 $1/p$). For each batch of around $10^6$ words, we update the parameters
 as 
+
 $$\theta := \theta - \eta \nabla_\theta L(\theta),$$ 
+
 where $L$ in
 equation (8) is restricted to the batch and $\eta$ is the
 learning rate hyperparameter, around $10^{-4}$.
@@ -187,7 +193,9 @@ parametrization of $F$ and of the embedding map $e(\cdot)$ with $L=1$
 consists of a $p \times v$ embedding matrix $E$ and scaling matrices
 $U \in  \mathbb{R}^{p \times p}$, $W \in \mathbb{R}^{v \times p}$,
 $V \in \mathbb{R}^{p \times v}$ and activation function $g$:
+
 $$e_t = E \mathbf{1}_{w_t}, \; z_t = g(U z_{t-1}+W e_t),\; y_t =\text{softmax}(V z_t).$$
+
 It is common to take $V =\beta  E'$ to reduce the number of parameters.
 RNNs can be stacked, by using the entire sequence of outputs from one
 RNN as an input sequence to another one. Small changes make RNNs
@@ -249,11 +257,11 @@ Permuting $x_{1:i}$ (changing the order of words) in
 (13) does not change $u_i$. To avoid this
 invariance, word position is added explicitly by extending each input
 $x_i$ to $(x_i,b_i) \in \mathbb{R}^{(p+L) \times 1}$, with $b_i$ the
-$i$-th standard basis vector in $\mathbb{R}^{L \times 1}$. Then we can
+$i$-th standard basis vector in $\mathbb{R}^{L \times 1}$. We
 learn a combined representation $z \in \mathbb{R}^{L \times p}$ defined
 by 
 
-$$\tag{14} \label{eq:LLM14}
+$$ 
 z_i =W_z \max \{W_x x_i + W_b b_i,0\} \in \mathbb{R}^p, \; W_z \in \mathbb{R}^{p \times m}, W_x \in \mathbb{R}^{m \times p}, W_b \in \mathbb{R}^{m \times L}.$$
 
 The total computation required by the transformer scales as $L^2$,
