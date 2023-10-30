@@ -60,7 +60,9 @@ In particular, the
 $P(w_{1:k}) = \prod_{i=1}^{k} P(w_i)$. The conditional probabilities are
 estimated from the corpus by the corresponding empirical
 distributions,[^2]
+
 $$P(w_k|w_{k-1},\ldots,w_{k-N+1}) =\frac{\text{Number of occurrences of } w_{(k-N+1):k}}{\text{Number of occurrences of } w_{(k-N+1):(k-1)}}.$$
+
 The N-gram model with $N=3$ or $N=4$ works quite well. However, even for
 an $N$ as low as 20, the entire internet corpus will contain only a tiny
 fraction of the possible (and sensible) twenty words strings, making the
@@ -133,6 +135,7 @@ $$L_{CE}(y_t,\mathbf{1}_{w_t}|w_{(t-L):(t-1)}) := - \langle \mathbf{1}_{w_t}, \l
 In other words, we simply calculate the negative of the log probability
 predicted by the model for the actual observed word. The average
 cross-entropy loss over the entire corpus $w_{1:n}$ is
+
 $$\tag{8} \label{eq:LLMloss}
 L := \frac 1n \sum_{t=1}^n L_{CE}(y_t,\mathbf{1}_{w_t}|w_{(t-L):(t-1)})$$
 
@@ -161,6 +164,7 @@ FFNs are natural candidates to describe $F$. With enough parameters,
 they can approximate arbitrarily well any function. FFNs with $d$ hidden
 layers are compositions of affine functions $W$ and a nonlinear
 activation function $\sigma$ (applied component wise)
+
 $$F_{FFN} := \sigma \circ W_d \circ W_{d-1} \circ \sigma \circ \ldots W_1 \circ \sigma \circ W_0.$$
 
 FFNs can handle relatively large $L$ of around $100$. This approach
