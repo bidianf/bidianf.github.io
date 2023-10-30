@@ -18,7 +18,9 @@ words and enable sampling of text from this distribution, hence they are
 are *generative*. The distribution of a sequence (corpus) of
 words/tokens[^1] $w_{1:n} := (w_1,\ldots,w_n)$ is determined by the
 conditional distributions of the next word in the sequence given the
-previous words, $$P(w_{1:n}) = \prod_{k=1}^n P(w_k|w_{1:(k-1)}).$$ If we
+previous words,
+ $$P(w_{1:n}) = \prod_{k=1}^n P(w_k|w_{1:(k-1)}).$$ 
+If we
 learn these conditional distributions, to generate text is enough to
 sample from the distribution of the next word conditional on the
 sequence so far, append the predicted word to the existing sequence and
@@ -102,11 +104,11 @@ build Markovian LLMs with sliding window of $L$ words:
     $z_t=F(x_{(t-L):(t-1)};\theta) \in \mathbb{R}^{p \times 1}$.
 
 -   Output the probability mass function[^3]
-    $y_{t} \in \Delta(\mathcal{V}) \subset \mathbb{R}^v$ of the next
-    word $w_t$ based on its (cosine) similarity to $z$,
+    $y_{t} \in \Delta(\mathcal{V}) \subset \mathbb{R}^v$ of the next word $w_t$ based on its (cosine) similarity to $z$,
     $$y_t:=\text{softmax}(\beta \langle e(w'), z_t \rangle  \; : \; w' \in \mathcal{V} ) \in \Delta(V).$$
-    In other words,
-    $$y_t(w) = P(w_t = w|w_{(t-L):(t-1)}) = \frac{e^{\beta \langle e(w), z_t \rangle}}{\sum_{w' \in \mathcal{V}} e^{\beta \langle e(w'), z \rangle } }.$$
+
+In other words,
+$$y_t(w) = P(w_t = w|w_{(t-L):(t-1)}) = \frac{e^{\beta \langle e(w), z_t \rangle}}{\sum_{w' \in \mathcal{V}} e^{\beta \langle e(w'), z \rangle } }.$$
 
 The hyperparameter $\beta$ is the inverse *temperature* parameter
 (inspired by statistical mechanics). A large $\beta \rightarrow \infty$
@@ -114,7 +116,9 @@ places probability close to $1$ on the word with the most similar
 embedding to the prediction $z$. If the embedding function is linear,
 $e(w):=E \mathbf{1}_w$ with $E$ a $p \times v$ matrix, then the output
 is simply
+
 $$y_t = \text{softmax} (\beta \mathbf{1}'_w E' z_t \; : \; w \in  \mathcal{V}  ) = \text{softmax} (\beta I E' z_t) = \text{softmax} (\beta E' z_t),$$
+
 where $I$ is the $v \times v$ identity matrix formed by stacking the row
 vectors $\mathbf{1}'_w$ for $w \in \mathcal{V}$.
 
@@ -123,12 +127,15 @@ cross-entropy loss at $t$ of predicting next words. The cross entropy
 between the predicted probability distribution $y_t$ over the vocabulary
 $V$ and the \"data\" distribution which is a Dirac (atomic) distribution
 putting probability $1$ on the observed word $w_t$ is
+
 $$L_{CE}(y_t,\mathbf{1}_{w_t}|w_{(t-L):(t-1)}) := - \langle \mathbf{1}_{w_t}, \log y_t \rangle.$$
+
 In other words, we simply calculate the negative of the log probability
 predicted by the model for the actual observed word. The average
 cross-entropy loss over the entire corpus $w_{1:n}$ is
 $$\tag{8} \label{eq:LLMloss}
 L := \frac 1n \sum_{t=1}^n L_{CE}(y_t,\mathbf{1}_{w_t}|w_{(t-L):(t-1)})$$
+
 We give the model the correct history to predict the next word (*teacher
 forcing*) rather than the predicted most probable words obtained
 previously. It is more common to report the *perplexity* $\exp(L_{CE})$
@@ -142,7 +149,9 @@ The minimization with respect to the parameters $\theta$ is done via
 stochastic gradient descent. We start with an initial guess for the
 parameters (usually independent normal with mean zero and variance
 $1/p$). For each batch of around $10^6$ words, we update the parameters
-as $$\theta := \theta - \eta \nabla_\theta L(\theta),$$ where $L$ in
+as 
+$$\theta := \theta - \eta \nabla_\theta L(\theta),$$ 
+where $L$ in
 equation (8) is restricted to the batch and $\eta$ is the
 learning rate hyperparameter, around $10^{-4}$.
 
