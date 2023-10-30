@@ -1,13 +1,14 @@
 ---
 layout: page
 title: "Research"
-header-img: "img/distributed.png"
+header-img: "img/distributed.jpg"
 ---
 
 You can access my academic research papers [here](https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=1843987).
+___
 
 I refereed for [Econometrica](https://onlinelibrary.wiley.com/journal/14680262), [Journal of Economic Theory](https://www.sciencedirect.com/journal/journal-of-economic-theory), [Journal of Mathematical Economics](https://www.sciencedirect.com/journal/journal-of-mathematical-economics), [Economic Theory](https://www.springer.com/journal/199), [Journal of Empirical Finance](https://www.sciencedirect.com/journal/journal-of-empirical-finance), [Review of Financial Economics](https://onlinelibrary.wiley.com/journal/18735924), [Optimization](https://www.tandfonline.com/journals/gopt20).
-
+___
 I presented my research at: 
 - 2017: [SAET (Faro, PT)](https://saet.uiowa.edu/past-events/saet2017/), [EWGET (Salamanca, ES)](https://eventos.usal.es/event_detail/7594/detail.html), [Georgia State University](gsu.edu);
 - 2016: [University of Tokyo](https://www.u-tokyo.ac.jp/en/), [Bank of Japan (Tokyo, JP)](https://www.boj.or.jp/en/), XXV EWGET (Glasgow, GB), [INFER (Reus, ES)](https://infer-research.eu/wp-content/uploads/2020/12/Call-for-Papers-INFER-Conference-2016.pdf), [ERMAS (Timisoara, RO)](https://ermas2016.uvt.ro), [GEBA (Iasi, RO)](https://www.feaa.uaic.ro/geba/2016/Programme.html)
