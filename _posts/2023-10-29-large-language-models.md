@@ -2,7 +2,8 @@
 title: Large Language Models
 layout: post
 comments: True
-author: "Martin Krasser"
+hidden: False
+author: "Florin Bidian"
 header-img: "img/distributed.png"
 ---
 
@@ -20,11 +21,11 @@ words/tokens[^1] $w_{1:n} := (w_1,\ldots,w_n)$ is determined by the
 conditional distributions of the next word in the sequence given the
 previous words,
 
- $$P(w_{1:n}) = \prod_{k=1}^n P(w_k|w_{1:(k-1)}).$$ 
+ $$P(w_{1:n}) = \prod_{k=1}^n P(w_k|w_{1:(k-1)}). \tag{1}$$ 
 
 If we
-learn these conditional distributions, to generate text is enough to
-sample from the distribution of the next word conditional on the
+learn these conditional distributions, we
+can sample from the distribution of the next word conditional on the
 sequence so far, append the predicted word to the existing sequence and
 continue the process to generate a text of desired length. This process
 is known as *autoregressive* generation or *causal language modeling*
@@ -55,7 +56,7 @@ The simplest language model is the N-gram model. It imposes the Markov
 condition that only the previous $N-1$ words are useful in predicting
 the probability of the current word,
 
-$$P(w_k|w_{1:(k-1)}) = P(w_k|w_{(k-N+1):(k-1)}).$$ 
+$$P(w_k|w_{1:(k-1)}) = P(w_k|w_{(k-N+1):(k-1)}). \tag{2}$$ 
 
 In particular, the
 1-gram model assumes that words are independent,
@@ -63,7 +64,7 @@ $P(w_{1:k}) = \prod_{i=1}^{k} P(w_i)$. The conditional probabilities are
 estimated from the corpus by the corresponding empirical
 distributions,[^2]
 
-$$P(w_k|w_{k-1},\ldots,w_{k-N+1}) =\frac{\text{Number of occurrences of } w_{(k-N+1):k}}{\text{Number of occurrences of } w_{(k-N+1):(k-1)}}.$$
+$$P(w_k|w_{k-1},\ldots,w_{k-N+1}) =\frac{\text{Number of occurrences of } w_{(k-N+1):k}}{\text{Number of occurrences of } w_{(k-N+1):(k-1)}}.\tag{3}$$
 
 The N-gram model with $N=3$ or $N=4$ works quite well. However, even for
 an $N$ as low as 20, the entire internet corpus will contain only a tiny
@@ -90,17 +91,17 @@ components (or other more refined methods).
 
 The current state of the art LLMs learn a $p \times v$ embedding matrix
 $E$ by treating the elements of $E$ as additional parameters and convert
-a one-hot vector $\mathbf{1}_w \in \mathbb{R}^v$ for word $w$ into its
-embedding $E \mathbf{1}_w  \in \mathbb{R}^p$.
+a one-hot vector $\mathbf{1}_w \in \mathbb{R}^{v \times 1}$ for word $w$ into its
+embedding $E \mathbf{1}_w  \in \mathbb{R}^{p \times 1}$.
 
 ## A blueprint for LLMs
 
 The use of an embedding map $e(\cdot)$ provides a general approach to
-build Markovian LLMs with sliding window of $L$ words:
+build Markovian LLMs with a sliding window of over the last $L$ words:
 
 -   Given a sequence of $L$ words $w_{t-1},\ldots,w_{t-L}$, concatenate
-    their embeddings into an $L \cdot p$-dimensional vector
-    $x_{(t-L):(t-1)}$.
+    their embeddings into a vector
+    $x_{(t-L):(t-1)} \in \mathbb{R}^{(L \cdot p) \times 1}$.
 
 -   Use a function
     $F(\cdot;\theta):\mathbb{R}^{L \times p} \rightarrow \mathbb{R}^{p \times 1}$
@@ -110,11 +111,11 @@ build Markovian LLMs with sliding window of $L$ words:
 -   Output the probability mass function[^3]
     $y_{t} \in \Delta(\mathcal{V}) \subset \mathbb{R}^v$ of the next word $w_t$ based on its (cosine) similarity to $z$,
 
-    $$y_t:=\text{softmax}(\beta \langle e(w'), z_t \rangle  \; : \; w' \in \mathcal{V} ) \in \Delta(V).$$
+    $$y_t:=\text{softmax}(\beta \langle e(w'), z_t \rangle  \; : \; w' \in \mathcal{V} ) \in \Delta(V). \tag{4}$$
 
 In other words,
 
-$$y_t(w) = P(w_t = w|w_{(t-L):(t-1)}) = \frac{e^{\beta \langle e(w), z_t \rangle}}{\sum_{w' \in \mathcal{V}} e^{\beta \langle e(w'), z \rangle } }.$$
+$$y_t(w) = P(w_t = w|w_{(t-L):(t-1)}) = \frac{e^{\beta \langle e(w), z_t \rangle}}{\sum_{w' \in \mathcal{V}} e^{\beta \langle e(w'), z \rangle } }. \tag{5}$$
 
 The hyperparameter $\beta$ is the inverse *temperature* parameter
 (inspired by statistical mechanics). A large $\beta \rightarrow \infty$
@@ -123,7 +124,7 @@ embedding to the prediction $z$. If the embedding function is linear,
 $e(w):=E \mathbf{1}_w$ with $E$ a $p \times v$ matrix, then the output
 is simply
 
-$$y_t = \text{softmax} (\beta \mathbf{1}'_w E' z_t \; : \; w \in  \mathcal{V}  ) = \text{softmax} (\beta I E' z_t) = \text{softmax} (\beta E' z_t),$$
+$$y_t = \text{softmax} (\beta \mathbf{1}'_w E' z_t \; : \; w \in  \mathcal{V}  ) = \text{softmax} (\beta I E' z_t) = \text{softmax} (\beta E' z_t), \tag{6}$$
 
 where $I$ is the $v \times v$ identity matrix formed by stacking the row
 vectors $\mathbf{1}'_w$ for $w \in \mathcal{V}$.
@@ -134,19 +135,19 @@ between the predicted probability distribution $y_t$ over the vocabulary
 $V$ and the \"data\" distribution which is a Dirac (atomic) distribution
 putting probability $1$ on the observed word $w_t$ is
 
-$$L_{CE}(y_t,\mathbf{1}_{w_t}|w_{(t-L):(t-1)}) := - \langle \mathbf{1}_{w_t}, \log y_t \rangle.$$
+$$L_{CE}(y_t,\mathbf{1}_{w_t}|w_{(t-L):(t-1)}) := - \langle \mathbf{1}_{w_t}, \log y_t \rangle. \tag{7}$$
 
 In other words, we simply calculate the negative of the log probability
 predicted by the model for the actual observed word. The average
 cross-entropy loss over the entire corpus $w_{1:n}$ is
 
-$$\tag{8} \label{eq:LLMloss}
-L := \frac 1n \sum_{t=1}^n L_{CE}(y_t,\mathbf{1}_{w_t}|w_{(t-L):(t-1)})$$
+$$
+L := \frac 1n \sum_{t=1}^n L_{CE}(y_t,\mathbf{1}_{w_t}|w_{(t-L):(t-1)}) \tag{8}$$
 
 We give the model the correct history to predict the next word (*teacher
 forcing*) rather than the predicted most probable words obtained
 previously. It is more common to report the *perplexity* $\exp(L_{CE})$
-instead of the cross-entropy loss $L_{CE}$, since it represents the
+instead of the cross-entropy loss $L_{CE}$. It represents the
 inverse of the average probability of predicting correctly the next
 word. State of the art LLMs achieve perplexity of around 20, meaning
 that they predict correctly the next word occurring in training data
@@ -158,7 +159,7 @@ parameters (usually independent normal with mean zero and variance
 $1/p$). For each batch of around $10^6$ words, we update the parameters
 as 
 
-$$\theta := \theta - \eta \nabla_\theta L(\theta),$$ 
+$$\theta := \theta - \eta \nabla_\theta L(\theta), \tag{9}$$ 
 
 where $L$ in
 equation (8) is restricted to the batch and $\eta$ is the
@@ -171,11 +172,10 @@ they can approximate arbitrarily well any function. FFNs with $d$ hidden
 layers are compositions of affine functions $W$ and a nonlinear
 activation function $\sigma$ (applied component wise)
 
-$$F_{FFN} := \sigma \circ W_d \circ W_{d-1} \circ \sigma \circ \ldots W_1 \circ \sigma \circ W_0.$$
+$$F_{FFN} := \sigma \circ W_d \circ W_{d-1} \circ \sigma \circ \ldots W_1 \circ \sigma \circ W_0. \tag{10}$$
 
 FFNs can handle relatively large $L$ of around $100$. This approach
-never gained traction and the *transformer* architecture that can work
-with much larger $L$ came to be dominant.
+never gained traction and the *transformer* architecture, accommodating larger $L$, came to be dominant.
 
 ## Recurrent Neural Network(s) (RNNs)
 
@@ -186,7 +186,7 @@ depends on the previous prediction, in addition to the previous words
 embeddings. This \"recursive\" property leads to a dynamical system and
 to long-term dependence (\"memory\"):
 
-$$z_t =  F_{RRN}(z_{t-1},x_{(t-L):(t-1)};\theta).$$ 
+$$z_t =  F_{RRN}(z_{t-1},x_{(t-L):(t-1)};\theta). \tag{11}$$ 
 
 A typical joint
 parametrization of $F$ and of the embedding map $e(\cdot)$ with $L=1$
@@ -194,7 +194,7 @@ consists of a $p \times v$ embedding matrix $E$ and scaling matrices
 $U \in  \mathbb{R}^{p \times p}$, $W \in \mathbb{R}^{v \times p}$,
 $V \in \mathbb{R}^{p \times v}$ and activation function $g$:
 
-$$e_t = E \mathbf{1}_{w_t}, \; z_t = g(U z_{t-1}+W e_t),\; y_t =\text{softmax}(V z_t).$$
+$$e_t = E \mathbf{1}_{w_t}, \; z_t = g(U z_{t-1}+W e_t),\; y_t =\text{softmax}(V z_t). \tag{12}$$
 
 It is common to take $V =\beta  E'$ to reduce the number of parameters.
 RNNs can be stacked, by using the entire sequence of outputs from one
@@ -227,11 +227,11 @@ dominant architecture.
 
 A *transformer block* with $H$ *heads* consists of a composition of two
 layers, each mapping some sequence of embeddings
-$x_{1:L} = (x_1,\ldots,x_L) \in \mathbb{R}^{Lp}$ into a sequence
-$z_{1:L} = (z_1,\ldots,z_L) \in \mathbb{R}^{Lp}$ of equal length. The
+$x_{1:L} = (x_1,\ldots,x_L) \in \mathbb{R}^{(Lp)\times 1}$ into a sequence
+$z_{1:L} = (z_1,\ldots,z_L) \in \mathbb{R}^{(Lp)\times 1}$ of equal length. The
 first layer is a FFN with a single hidden layer with $p_h$ neurons
 applied component by component, $z_i = F_{FFN}(x_i)$. The
-*self-attention* attention layer consists of $H$ \"heads\" run in
+*self-attention* attention layer consists of $H$ \"heads\" ran in
 parallel on the same input $x_{1:L}$. Let $q:=p / H$ the embedding
 dimension divided by the number of heads. The outputs inputs
 $u_i \in \mathbb{R}^{q \times 1}$ with $i \in \{1,\ldots,L\}$ of each
@@ -239,8 +239,8 @@ head are a scaled weighted average of the previous inputs $x_j$ with
 $j \le i$, with weights determined by the (generalized) similarity
 between the current and previous words, 
 
-$$\label{eq:LLMattention}
-u_i := W \sum_{j=1}^i \alpha_{ij} x_j,\; \alpha_{ij}:= \text{softmax} (x'_i B x_j \: : \: 1 \le j \le i).$$
+$$
+u_i := W \sum_{j=1}^i \alpha_{ij} x_j,\; \alpha_{ij}:= \text{softmax} (x'_i B x_j \: : \: 1 \le j \le i). \tag{13}$$
 
 The matrix $B \in \mathbb{R}^{p \times p}$ emphasizes desired parts of
 the embeddings vectors when calculating similarities. When $B$ is the
@@ -262,7 +262,7 @@ learn a combined representation $z \in \mathbb{R}^{L \times p}$ defined
 by 
 
 $$ 
-z_i =W_z \max \{W_x x_i + W_b b_i,0\} \in \mathbb{R}^p, \; W_z \in \mathbb{R}^{p \times m}, W_x \in \mathbb{R}^{m \times p}, W_b \in \mathbb{R}^{m \times L}.$$
+z_i =W_z \max \{W_x x_i + W_b b_i,0\} \in \mathbb{R}^p, \; W_z \in \mathbb{R}^{p \times m}, W_x \in \mathbb{R}^{m \times p}, W_b \in \mathbb{R}^{m \times L}.\tag{14}$$
 
 The total computation required by the transformer scales as $L^2$,
 making very large $L$ impractical. As an illustration, the 175B

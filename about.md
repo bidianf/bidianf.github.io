@@ -10,7 +10,7 @@ header-includes:
 I am a Professor of the Practice in Economics and Data Science at Northeastern University, Seattle. A recent resume is available [here](https://drive.google.com/open?id=1nHral1DJRgAXUpP1R0GevKobj2dk3nrI). 
 
 ___
-The blog gives concise introductions to topics in Machine Learning, Statistics, Economics and Mathematics. I focus on the mathematical derivations that build intuition for the core ideas. Where needed, I include code. I assume knowledge of linear algebra and probability.
+The blog gives concise introductions to topics in Machine Learning, Statistics, Economics and Mathematics. It is intended for the future me and for those who don't want to slog through dozens of pages to get to the core mathematical derivations that build intuition. Where needed, I include code. Knowledge of linear algebra and probability is assumed.
 
  > "A picture may be worth a thousand words, a formula is worth a thousand pictures" [(Edsger Dijkstra)](https://en.wikipedia.org/wiki/Edsger_W._Dijkstra). 
 
