@@ -1,40 +1,5 @@
 [
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Florin Bidian",
-    "section": "",
-    "text": "I am a Professor of the Practice in Economics and Data Science at Northeastern University, Seattle. A recent resume is available here.\n\nEducation\nPhD in Economics, 2011, University of Minnesota\n\n\nInterests\nEconomics, Statistics, Machine Learning, Applied Mathematics"
-  },
-  {
-    "objectID": "index.html#about",
-    "href": "index.html#about",
-    "title": "Florin Bidian",
-    "section": "",
-    "text": "I am a Professor of the Practice in Economics and Data Science at Northeastern University, Seattle. A recent resume is available here."
-  },
-  {
-    "objectID": "index.html#education",
-    "href": "index.html#education",
-    "title": "Florin Bidian",
-    "section": "Education",
-    "text": "Education\nPhD in Economics, 2011, University of Minnesota"
-  },
-  {
-    "objectID": "research.html",
-    "href": "research.html",
-    "title": "Research",
-    "section": "",
-    "text": "You can access my academic research papers here.\n\nI refereed for Econometrica, Journal of Economic Theory, Journal of Mathematical Economics, Economic Theory, Journal of Empirical Finance, Review of Financial Economics, Optimization.\n\nI presented my research at:\nSAET Faro, PT, EWGET Salamanca, ES, Georgia State University (2017), University of Tokyo, Bank of Japan Tokyo, JP, XXV EWGET Glasgow, GB, INFER Reus, ES, ERMAS Timisoara, RO, GEBA Iasi, RO (2016), ERMAS Cluj, RO (2015), EEA-ESEM Toulouse, FR, ERMAS Cluj, RO, INFER Timisoara, RO (2014), Brown University, Yeshiva University, AMES SG, China Meetings of the Econometric Society Beijing, CN, XXII EWGET Vienna, AT, MBF Rome, IT (2013), LAMES Lima, PE, NASM Evanston, US, XXI EWGET Exeter, UK (2012), Utah State University, SAET Faro, PT, Georgia State University (2011)"
-  },
-  {
     "objectID": "posts.html",
     "href": "posts.html",
     "title": "Blog",
@@ -103,5 +68,19 @@
     "title": "Large Language Models",
     "section": "Footnotes",
     "text": "Footnotes\n\n\nThe text is usually tokenized (broken into words, numbers and punctuation marks), stemmed (finding the root of each word) or lemmatized (finding the canonical/dictionary form of a word).↩︎\nTo handle N-grams in the test data that are not present in the training data, we replace such zero occurrences with one (equivalent to a Laplace uniform prior on N-grams in the combined data).↩︎\n\\(\\Delta(\\mathcal{V})\\) is the set of probability distributions on \\(\\mathcal{V}\\).↩︎\nEven for text generation tasks, RNNs are usually combined in an encoder-decoder architecture. The encoder RNN converts the input sequence \\(w_{1:n}\\) into a contextualized representation \\(c\\), usually taken to be the last state \\(z_n\\). The decoder RNN accepts \\(c\\) as an its initial state and generates a sequence \\(\\tilde z_{1:m}\\) and the sequence of outputs \\(y_{1:m}\\), using the previously generated output as an input.↩︎\nThe long short-term memory (LSTM) network is an extension of RNN that partially mitigates this problem, and has become the standard unit for applications involving RNNs.↩︎"
+  },
+  {
+    "objectID": "research.html",
+    "href": "research.html",
+    "title": "Research",
+    "section": "",
+    "text": "You can access my academic research papers here.\n\nI refereed for Econometrica, Journal of Economic Theory, Journal of Mathematical Economics, Economic Theory, Journal of Empirical Finance, Review of Financial Economics, Optimization.\n\nI presented my research at:\nSAET Faro, PT, EWGET Salamanca, ES, Georgia State University (2017), University of Tokyo, Bank of Japan Tokyo, JP, XXV EWGET Glasgow, GB, INFER Reus, ES, ERMAS Timisoara, RO, GEBA Iasi, RO (2016), ERMAS Cluj, RO (2015), EEA-ESEM Toulouse, FR, ERMAS Cluj, RO, INFER Timisoara, RO (2014), Brown University, Yeshiva University, AMES SG, China Meetings of the Econometric Society Beijing, CN, XXII EWGET Vienna, AT, MBF Rome, IT (2013), LAMES Lima, PE, NASM Evanston, US, XXI EWGET Exeter, UK (2012), Utah State University, SAET Faro, PT, Georgia State University (2011)"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Florin Bidian",
+    "section": "",
+    "text": "I am a Professor of the Practice in Economics and Data Science at Northeastern University, Seattle. A recent resume is available here.\n\nEducation\nPhD in Economics, 2011, University of Minnesota\n\n\nInterests\nEconomics, Statistics, Machine Learning, Applied Mathematics"
   }
 ]
