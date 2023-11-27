@@ -1,2 +1,6 @@
 freeze: auto
+comments: 
+  giscus: 
+    repo: bidianf/bidianf.github.io
+    category: Blog
 title-block-banner: true
