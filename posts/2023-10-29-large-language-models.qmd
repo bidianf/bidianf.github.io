@@ -1,0 +1,310 @@
+---
+title: Large Language Models
+#description
+author: 
+    -name: Florin Bidian
+    -affiliation: Northeastern University
+    -affiliation-url: northeastern.edu
+date: 10-29-2023
+categories: [Machine Learning]
+citation:
+    url: https://bidianf.github.io/posts/2023-10-29-large-language-models
+draft: false # `true` will prevent post from being listed until ready
+image: img/pali.jpg
+---
+
+Jurafsky and Martin (2023) offer a book-length treatment of Large Language Models
+(LLMs) and related topics. Douglas (2023) is a an excellent review. I
+flesh out the mathematics of LLMs. I do not
+attempt to discuss the yet not understood and misterious reason of why
+LLMs work so well, in spite of their relatively simple mathematical
+inner workings.
+
+LLMs infer the probability distribution on the space of sequences of
+words and enable sampling of text from this distribution, hence they are
+are *generative*. The distribution of a sequence (corpus) of
+words/tokens[^1] $w_{1:n} := (w_1,\ldots,w_n)$ is determined by the
+conditional distributions of the next word in the sequence given the
+previous words,
+
+ $$P(w_{1:n}) = \prod_{k=1}^n P(w_k|w_{1:(k-1)}). \tag{1}$$ 
+
+If we
+learn these conditional distributions, we
+can sample from the distribution of the next word conditional on the
+sequence so far, append the predicted word to the existing sequence and
+continue the process to generate a text of desired length. This process
+is known as *autoregressive* generation or *causal language modeling*
+generation.
+
+*Greedy* decoding chooses the most probable token (word) at each step,
+instead of randomly sampling from the predicted conditional distribution
+of the next word. Choices that look good now might turn later to be
+suboptimal, and in practice one employs *beam search*. We keep $k$
+possible tokens at each step (the *beam width*), thus we select the best
+$k$ tokens. At the next step, each of these $k$ choices is extended
+incrementally being passed to distinct decoders, and we keep the $k$
+most probable sequences of length two etc.
+
+LLMs are trained by minimizing a measure of distance between the
+predicted and the actual next word for the entire corpus. This
+*self-supervised* capability of LLMs removes the need for labeled data
+and makes possible the use of the entire internet corpus of around
+$10^{12}$ words for training (Douglas, 2023). It justifies the \"large\"
+terminology in LLMs and it allows autoregressive LLMss to excel at text
+generation, summarization, question answering and even at machine
+translation, exceeding the performance of supervised models trained
+specifically on pairs of sequences in two different languages.
+
+## N-gram models
+
+The simplest language model is the N-gram model. It imposes the Markov
+condition that only the previous $N-1$ words are useful in predicting
+the probability of the current word,
+
+$$P(w_k|w_{1:(k-1)}) = P(w_k|w_{(k-N+1):(k-1)}). \tag{2}$$ 
+
+In particular, the
+1-gram model assumes that words are independent,
+$P(w_{1:k}) = \prod_{i=1}^{k} P(w_i)$. The conditional probabilities are
+estimated from the corpus by the corresponding empirical
+distributions,[^2]
+
+$$P(w_k|w_{k-1},\ldots,w_{k-N+1}) =\frac{\text{Number of occurrences of } w_{(k-N+1):k}}{\text{Number of occurrences of } w_{(k-N+1):(k-1)}}.\tag{3}$$
+
+The N-gram model with $N=3$ or $N=4$ works quite well. However, even for
+an $N$ as low as 20, the entire internet corpus will contain only a tiny
+fraction of the possible (and sensible) twenty words strings, making the
+estimation of probabilities based on empirical distributions
+impractical.
+
+## Embeddings
+
+To progress beyond such simple N-grams models, words $w$ need to be
+converted to vectors $e(w) \in \mathbb{R}^{p\times 1}$ using an
+*embedding* map $e(\cdot)$. Let $\mathcal{V}$ be the vocabulary and
+$v:=|\mathcal{V}|$ the number of (unique) words. Any word
+$W \in \mathcal{V}$ can be represented as a one-hot $v$-dimensional
+vector $\mathbf{1}_w : V \to \{0,1\}$ with $\mathbf{1}_w(w') =1$ if
+$w=w'$ and $0$ otherwise. Even better, we can use the $N$-gram
+*co-occurrence* vector in $\mathbb{R}^{v \times 1}$ with coordinate $i$
+indicating the number of co-occurrences of words $i,w$ in an N-gram. The
+$v \times v$ matrix with columns given by these vectors is called the
+co-occurrence matrix. These sparse high dimensional vectors seem
+wasteful and they can be embedded in a space of dimension $p<<n$ by
+replacing them by their scores relative to the first $p$ principal
+components (or other more refined methods).
+
+The current state of the art LLMs learn a $p \times v$ embedding matrix
+$E$ by treating the elements of $E$ as additional parameters and convert
+a one-hot vector $\mathbf{1}_w \in \mathbb{R}^{v \times 1}$ for word $w$ into its
+embedding $E \mathbf{1}_w  \in \mathbb{R}^{p \times 1}$.
+
+## A blueprint for LLMs
+
+The use of an embedding map $e(\cdot)$ provides a general approach to
+build Markovian LLMs with a sliding window of over the last $L$ words:
+
+-   Given a sequence of $L$ words $w_{t-1},\ldots,w_{t-L}$, concatenate
+    their embeddings into a vector
+    $x_{(t-L):(t-1)} \in \mathbb{R}^{(L \cdot p) \times 1}$.
+
+-   Use a function
+    $F(\cdot;\theta):\mathbb{R}^{L \times p} \rightarrow \mathbb{R}^{p \times 1}$
+    parametrized by $\theta$ to $x$ to produce a prediction vector
+    $z_t=F(x_{(t-L):(t-1)};\theta) \in \mathbb{R}^{p \times 1}$.
+
+-   Output the probability mass function[^3]
+    $y_{t} \in \Delta(\mathcal{V}) \subset \mathbb{R}^v$ of the next word $w_t$ based on its (cosine) similarity to $z$,
+
+    $$y_t:=\text{softmax}(\beta \langle e(w'), z_t \rangle  \; : \; w' \in \mathcal{V} ) \in \Delta(V). \tag{4}$$
+
+In other words,
+
+$$y_t(w) = P(w_t = w|w_{(t-L):(t-1)}) = \frac{e^{\beta \langle e(w), z_t \rangle}}{\sum_{w' \in \mathcal{V}} e^{\beta \langle e(w'), z \rangle } }. \tag{5}$$
+
+The hyperparameter $\beta$ is the inverse *temperature* parameter
+(inspired by statistical mechanics). A large $\beta \rightarrow \infty$
+places probability close to $1$ on the word with the most similar
+embedding to the prediction $z$. If the embedding function is linear,
+$e(w):=E \mathbf{1}_w$ with $E$ a $p \times v$ matrix, then the output
+is simply
+
+$$y_t = \text{softmax} (\beta \mathbf{1}'_w E' z_t \; : \; w \in  \mathcal{V}  ) = \text{softmax} (\beta I E' z_t) = \text{softmax} (\beta E' z_t), \tag{6}$$
+
+where $I$ is the $v \times v$ identity matrix formed by stacking the row
+vectors $\mathbf{1}'_w$ for $w \in \mathcal{V}$.
+
+The parameters $\theta$ are estimated by minimizing the average
+cross-entropy loss at $t$ of predicting next words. The cross entropy
+between the predicted probability distribution $y_t$ over the vocabulary
+$V$ and the \"data\" distribution which is a Dirac (atomic) distribution
+putting probability $1$ on the observed word $w_t$ is
+
+$$L_{CE}(y_t,\mathbf{1}_{w_t}|w_{(t-L):(t-1)}) := - \langle \mathbf{1}_{w_t}, \log y_t \rangle. \tag{7}$$
+
+In other words, we simply calculate the negative of the log probability
+predicted by the model for the actual observed word. The average
+cross-entropy loss over the entire corpus $w_{1:n}$ is
+
+$$
+L := \frac 1n \sum_{t=1}^n L_{CE}(y_t,\mathbf{1}_{w_t}|w_{(t-L):(t-1)}) \tag{8}$$
+
+We give the model the correct history to predict the next word (*teacher
+forcing*) rather than the predicted most probable words obtained
+previously. It is more common to report the *perplexity* $\exp(L_{CE})$
+instead of the cross-entropy loss $L_{CE}$. It represents the
+inverse of the average probability of predicting correctly the next
+word. State of the art LLMs achieve perplexity of around 20, meaning
+that they predict correctly the next word occurring in training data
+about once in 20 tries.
+
+The minimization with respect to the parameters $\theta$ is done via
+stochastic gradient descent. We start with an initial guess for the
+parameters (usually independent normal with mean zero and variance
+$1/p$). For each batch of around $10^6$ words, we update the parameters
+as 
+
+$$\theta := \theta - \eta \nabla_\theta L(\theta), \tag{9}$$ 
+
+where $L$ in
+equation (8) is restricted to the batch and $\eta$ is the
+learning rate hyperparameter, around $10^{-4}$.
+
+## Feedforward Neural Networks (FFNs) 
+
+FFNs are natural candidates to describe $F$. With enough parameters,
+they can approximate arbitrarily well any function. FFNs with $d$ hidden
+layers are compositions of affine functions $W$ and a nonlinear
+activation function $\sigma$ (applied component wise)
+
+$$F_{FFN} := \sigma \circ W_d \circ W_{d-1} \circ \sigma \circ \ldots W_1 \circ \sigma \circ W_0. \tag{10}$$
+
+FFNs can handle relatively large $L$ of around $100$. This approach
+never gained traction and the *transformer* architecture, accommodating larger $L$, came to be dominant.
+
+## Recurrent Neural Network(s) (RNNs)
+
+Before the advent of transformers, RNNs were favored over FFNs for
+sequence modeling as they can capture arbitrarily long dependence on the
+past (large $L$). The prediction (\"state\") of a RNN at each stage
+depends on the previous prediction, in addition to the previous words
+embeddings. This \"recursive\" property leads to a dynamical system and
+to long-term dependence (\"memory\"):
+
+$$z_t =  F_{RRN}(z_{t-1},x_{(t-L):(t-1)};\theta). \tag{11}$$ 
+
+A typical joint
+parametrization of $F$ and of the embedding map $e(\cdot)$ with $L=1$
+consists of a $p \times v$ embedding matrix $E$ and scaling matrices
+$U \in  \mathbb{R}^{p \times p}$, $W \in \mathbb{R}^{v \times p}$,
+$V \in \mathbb{R}^{p \times v}$ and activation function $g$:
+
+$$e_t = E \mathbf{1}_{w_t}, \; z_t = g(U z_{t-1}+W e_t),\; y_t =\text{softmax}(V z_t). \tag{12}$$
+
+It is common to take $V =\beta  E'$ to reduce the number of parameters.
+RNNs can be stacked, by using the entire sequence of outputs from one
+RNN as an input sequence to another one. Small changes make RNNs
+applicable to other tasks.[^4] For *sequence labeling* where the network
+needs to assign one of $k$ classes to each word in a sequence (e.g.,
+part-of-speech tagging), $V$ is a $k \times p$ matrix $Z$ resulting in
+tag probabilities over the given set of $k$ labels.
+
+For *sequence classification* (sentiment analysis, spam detection etc),
+the last state $z_n$ is used as a compressed representation of the
+entire sequence $w_{1:n}$ and passed to a FFN that chooses a target
+class via a softmax. *Bidirectional* RNNs run an RNN on the sequence
+(left to right), and an independent RNN on the inverted sequence (right
+to left). The terminal states of the two networks, emphasizing
+information from both ends of the sequence, are concatenated and passed
+to the FFN.
+
+RNNs are difficult to train with long sentences, as the repeated
+compositions of functions implicit in the recursive structure leads to
+gradients featuring repeated multiplications and possibly driven to zero
+(the *vanishing gradients* problem).[^5]
+
+RNNs cannot process words in a window of length $L$ in parallel, hence
+computational time is $L$. Transformers, discussed next, dispense with
+recursion and are amenable to parallel processing. They have become the
+dominant architecture.
+
+## Transformers
+
+A *transformer block* with $H$ *heads* consists of a composition of two
+layers, each mapping some sequence of embeddings
+$x_{1:L} = (x_1,\ldots,x_L) \in \mathbb{R}^{(Lp)\times 1}$ into a sequence
+$z_{1:L} = (z_1,\ldots,z_L) \in \mathbb{R}^{(Lp)\times 1}$ of equal length. The
+first layer is a FFN with a single hidden layer with $p_h$ neurons
+applied component by component, $z_i = F_{FFN}(x_i)$. The
+*self-attention* attention layer consists of $H$ \"heads\" ran in
+parallel on the same input $x_{1:L}$. Let $q:=p / H$ the embedding
+dimension divided by the number of heads. The outputs inputs
+$u_i \in \mathbb{R}^{q \times 1}$ with $i \in \{1,\ldots,L\}$ of each
+head are a scaled weighted average of the previous inputs $x_j$ with
+$j \le i$, with weights determined by the (generalized) similarity
+between the current and previous words, 
+
+$$
+u_i := W \sum_{j=1}^i \alpha_{ij} x_j,\; \alpha_{ij}:= \text{softmax} (x'_i B x_j \: : \: 1 \le j \le i). \tag{13}$$
+
+The matrix $B \in \mathbb{R}^{p \times p}$ emphasizes desired parts of
+the embeddings vectors when calculating similarities. When $B$ is the
+identity matrix, we recover the usual cosine similarity. The scaling
+matrix $W \in \mathbb{R}^{q \times p}$ shrinks the dimension of the each
+output $u_i$ to $q$. Finally, the outputs of the $H$ heads run in
+parallel with different $B$ and $W$ parameters are concatenated to
+produce the desired output $z_{1:L} \in \mathbb{R}^{L \times p}$. To
+focus on the essentials, I omitted two additional ingredients in a
+transformer block: a layer normalization step, and residual connections
+between the attention and the fully connected layer (Jurafsky and Martin, 2023).
+
+Permuting $x_{1:i}$ (changing the order of words) in
+(13) does not change $u_i$. To avoid this
+invariance, word position is added explicitly by extending each input
+$x_i$ to $(x_i,b_i) \in \mathbb{R}^{(p+L) \times 1}$, with $b_i$ the
+$i$-th standard basis vector in $\mathbb{R}^{L \times 1}$. We
+learn a combined representation $z \in \mathbb{R}^{L \times p}$ defined
+by 
+
+$$ 
+z_i =W_z \max \{W_x x_i + W_b b_i,0\} \in \mathbb{R}^p, \; W_z \in \mathbb{R}^{p \times m}, W_x \in \mathbb{R}^{m \times p}, W_b \in \mathbb{R}^{m \times L}.\tag{14}$$
+
+The total computation required by the transformer scales as $L^2$,
+making very large $L$ impractical. As an illustration, the 175B
+parameters Chat GPT-3 uses an embedding dimension $p = 12288$, a hidden
+layer dimension $p_h = 4p$, a window length $L = 4096$ or $8192$, a
+number of heads $H = 96$ and $96$ stacked transformer blocks.
+
+[^1]: The text is usually tokenized (broken into words, numbers and
+    punctuation marks), stemmed (finding the root of each word) or
+    lemmatized (finding the canonical/dictionary form of a word).
+
+[^2]: To handle N-grams in the test data that are not present in the
+    training data, we replace such zero occurrences with one (equivalent
+    to a Laplace uniform prior on N-grams in the combined data).
+
+[^3]: $\Delta(\mathcal{V})$ is the set of probability distributions on
+    $\mathcal{V}$.
+
+[^4]: Even for text generation tasks, RNNs are usually combined in an
+    *encoder-decoder* architecture. The encoder RNN converts the input
+    sequence $w_{1:n}$ into a contextualized representation $c$, usually
+    taken to be the last state $z_n$. The decoder RNN accepts $c$ as an
+    its initial state and generates a sequence $\tilde z_{1:m}$ and the
+    sequence of outputs $y_{1:m}$, using the previously generated output
+    as an input.
+
+[^5]: The long short-term memory (LSTM) network is an extension of RNN
+    that partially mitigates this problem, and has become the standard
+    unit for applications involving RNNs.
+
+
+## References
+\[1\] Douglas, M. R. (2023). [Large language models](https://arxiv.org/abs/2307.05782)
+
+\[2\] Jurafsky, D. and Martin, J. H. (2023). [Speech and language processing : an introduction
+to natural language processing, computational linguistics, and speech recognition](https://web.stanford.edu/~jurafsky/slp3/)
+
+
+ 
