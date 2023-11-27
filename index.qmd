@@ -19,7 +19,7 @@ about:
 ---
 
 
-I am a Professor of the Practice in Economics and Data Science at Northeastern University, Seattle. A recent resume is available [here](https://drive.google.com/open?id=1nHral1DJRgAXUpP1R0GevKobj2dk3nrI). 
+I am a Professor of the Practice in Economics and Data Science at Northeastern University, Seattle. A recent resume is available [here](cv.pdf). 
 
 ### Education
 PhD in Economics, 2011, University of Minnesota
