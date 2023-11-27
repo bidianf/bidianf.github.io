@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Florin Bidian">
 <meta name="dcterms.date" content="2023-10-29">
 
 <title>Florin Bidian - Large Language Models</title>
@@ -120,6 +121,12 @@ ul.task-list li input[type="checkbox"] {
   
   <div class="quarto-title-meta">
 
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Florin Bidian </p>
+            </div>
+    </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
@@ -245,15 +252,16 @@ z_i =W_z \max \{W_x x_i + W_b b_i,0\} \in \mathbb{R}^p, \; W_z \in \mathbb{R}^{p
 <li id="fn4"><p>Even for text generation tasks, RNNs are usually combined in an <em>encoder-decoder</em> architecture. The encoder RNN converts the input sequence <span class="math inline">\(w_{1:n}\)</span> into a contextualized representation <span class="math inline">\(c\)</span>, usually taken to be the last state <span class="math inline">\(z_n\)</span>. The decoder RNN accepts <span class="math inline">\(c\)</span> as an its initial state and generates a sequence <span class="math inline">\(\tilde z_{1:m}\)</span> and the sequence of outputs <span class="math inline">\(y_{1:m}\)</span>, using the previously generated output as an input.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn5"><p>The long short-term memory (LSTM) network is an extension of RNN that partially mitigates this problem, and has become the standard unit for applications involving RNNs.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
-</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{2023,
-  author = {},
+</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{bidian2023,
+  author = {Bidian, Florin},
   title = {Large {Language} {Models}},
   date = {2023-10-29},
   url = {https://bidianf.github.io/posts/2023-10-29-large-language-models},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-2023" class="csl-entry quarto-appendix-citeas" role="listitem">
-<span>“Large Language Models.”</span> 2023. October 29, 2023. <a href="https://bidianf.github.io/posts/2023-10-29-large-language-models">https://bidianf.github.io/posts/2023-10-29-large-language-models</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-bidian2023" class="csl-entry quarto-appendix-citeas" role="listitem">
+Bidian, Florin. 2023. <span>“Large Language Models.”</span> October 29,
+2023. <a href="https://bidianf.github.io/posts/2023-10-29-large-language-models">https://bidianf.github.io/posts/2023-10-29-large-language-models</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {

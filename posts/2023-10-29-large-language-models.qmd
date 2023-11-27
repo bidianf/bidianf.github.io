@@ -1,10 +1,7 @@
 ---
 title: Large Language Models
 #description
-author: 
-    -name: Florin Bidian
-    -affiliation: Northeastern University
-    -affiliation-url: northeastern.edu
+author: Florin Bidian
 date: 10-29-2023
 categories: [Machine Learning]
 citation:
