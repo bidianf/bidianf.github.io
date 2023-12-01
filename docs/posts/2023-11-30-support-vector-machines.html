@@ -152,16 +152,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
                   </div>
   </div>
     
-  
+  <div class="quarto-title-meta-author">
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Affiliation</div>
+    
+      <div class="quarto-title-meta-contents">
+      <p class="author">Florin Bidian </p>
+    </div>
+      <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              Northeastern University
+            </p>
+        </div>
+      </div>
+
   <div class="quarto-title-meta">
 
-      <div>
-      <div class="quarto-title-meta-heading">Author</div>
-      <div class="quarto-title-meta-contents">
-               <p>Florin Bidian </p>
-            </div>
-    </div>
-      
+        
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
@@ -181,9 +188,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#perfectly-separated-classes" id="toc-perfectly-separated-classes" class="nav-link active" data-scroll-target="#perfectly-separated-classes">Perfectly separated classes</a></li>
+  <li><a href="#linearly-separated-classes" id="toc-linearly-separated-classes" class="nav-link active" data-scroll-target="#linearly-separated-classes">Linearly separated classes</a></li>
   <li><a href="#overlapping-classes" id="toc-overlapping-classes" class="nav-link" data-scroll-target="#overlapping-classes">Overlapping classes</a></li>
-  <li><a href="#nonlinear-boundaries-and-svms" id="toc-nonlinear-boundaries-and-svms" class="nav-link" data-scroll-target="#nonlinear-boundaries-and-svms">Nonlinear boundaries and SVMs</a></li>
+  <li><a href="#nonlinear-boundaries" id="toc-nonlinear-boundaries" class="nav-link" data-scroll-target="#nonlinear-boundaries">Nonlinear boundaries</a></li>
   <li><a href="#reproducing-kernel-hilbert-space-rkhs-and-the-kernel-trick" id="toc-reproducing-kernel-hilbert-space-rkhs-and-the-kernel-trick" class="nav-link" data-scroll-target="#reproducing-kernel-hilbert-space-rkhs-and-the-kernel-trick">Reproducing Kernel Hilbert Space (RKHS) and the Kernel Trick</a></li>
   </ul>
 </nav>
@@ -194,16 +201,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>Before neural networks resurfaced as the dominant paradigm, SVMs were among the most researched and popular classifiers. They are rich mathematically and have deep connections with fundamental results in functional analysis. Unlike a logistic regression, they work also when the classes are perfectly separable.</p>
+<p>SVMs are among the most researched and popular classifiers, and have deep connections with fundamental results in functional analysis. Unlike logistic regression, they work also when the classes are linearly separable, and through <em>kernelization</em>, they can identify nonlinear boundaries between classes.</p>
 <p>Consider observations <span class="math inline">\((y_i,x_i)_{i=1}^n\)</span> with <span class="math inline">\(y \in \{-1,1\}\)</span> being the dependent variable and <span class="math inline">\(x \in \mathbb{R}^p\)</span> the covariates. A hyperplane in <span class="math inline">\(\mathbb{R}^p\)</span> is the set of points <span class="math inline">\(x \in \mathbb{R}^p\)</span> with the property that <span class="math inline">\(h(x)=0\)</span>, where <span class="math inline">\(h : \mathbb{R}^p \to \mathbb{R}\)</span> is an affine function <span class="math inline">\(h(x):=\beta x +\beta_0\)</span> with <span class="math inline">\(\beta \in \mathbb{R}^p, \beta_0 \in \mathbb{R}\)</span> , and <span id="eq-svm-dot"><span class="math display">\[\beta x=\langle \beta,x \rangle := \sum_{j=1}^p \beta_j x_j \tag{1}\]</span></span> is the inner (dot) product of the vectors <span class="math inline">\(\beta=(\beta_1,\ldots,\beta_p)\)</span> and <span class="math inline">\(x=(x_1,\ldots,x_p)\)</span>.</p>
 <p>A hyperplane divides the <span class="math inline">\(\mathbb{R}^p\)</span> space into two half-spaces. SVMs find the hyperplane that “best separates” the two classes <span class="math inline">\(\{-1,1\}\)</span>. Roughly, (most of the) class <span class="math inline">\(1\)</span> observations fall in the half-space <span class="math inline">\(\{x\: |\: h(x)&gt;=0\}\)</span>, while (most of the) class <span class="math inline">\(-1\)</span> observations belong to the half-space <span class="math inline">\(\{x \: | \: h(x)&lt;0\}\)</span>. A new observation with covariates <span class="math inline">\(x\)</span> is will be classified as belonging to class determined by the sign of <span class="math inline">\(h(x) = \beta x +\beta_0\)</span>. While SVMs apply directly only to binary classes, they can be turned into a multiclass classifier using the one-vs-one pairwise classifications of observations, and using majority voting to determine the mist likely class.</p>
-<section id="perfectly-separated-classes" class="level2">
-<h2 class="anchored" data-anchor-id="perfectly-separated-classes">Perfectly separated classes</h2>
+<section id="linearly-separated-classes" class="level2">
+<h2 class="anchored" data-anchor-id="linearly-separated-classes">Linearly separated classes</h2>
 <p>The two classes can be perfectly separated by the hyperplane <span class="math inline">\(h\)</span> if <span class="math inline">\(y_i h(x_i) \ge 0\)</span> for all <span class="math inline">\(1 \le i \le n\)</span>.<br>
 Denote by <span class="math inline">\(\lVert \beta \rVert := (\sum_{j=1}^p \beta_j^2)^{1/2}\)</span> the Euclidean norm of <span class="math inline">\(\beta\)</span>. The distance from a point <span class="math inline">\(x\)</span> to the hyperplane <span class="math inline">\(h\)</span> can be calculated by selecting a point <span class="math inline">\(x_0\)</span> belonging to the hyperplane and projecting <span class="math inline">\(x-x_0\)</span> on the unit norm vector <span class="math inline">\(\beta/\lVert \beta \rVert\)</span> orthogonal to the hyperplane, <span id="eq-svm-dist"><span class="math display">\[
 \frac{\lvert  \beta (x-x_0)\rvert}{\lVert \beta \rVert}   = \frac{\lvert \beta x +\beta_0 \rvert}{\lVert \beta \rVert} = \frac{\lvert h(x) \rvert}{\lVert \beta \rVert}.
 \tag{2}\]</span></span></p>
-<p>If <span class="math inline">\(\beta\)</span> is normalized to have unit norm, <span class="math inline">\(y_i h(x_i)\)</span> is the distance from the observation <span class="math inline">\((y_i,x_i)\)</span> to the hyperplane, or the <em>margin</em> for this observation. With perfectly separable classes, we want to find the <em>optimal-margin</em> hyperplane, which is the hyperplane with the largest distance even from the closest points: <span id="eq-svm-margin"><span class="math display">\[
+<p>If <span class="math inline">\(\beta\)</span> is normalized to have unit norm, <span class="math inline">\(y_i h(x_i)\)</span> is the distance from the observation <span class="math inline">\((y_i,x_i)\)</span> to the hyperplane, or the <em>margin</em> for this observation. With perfectly separable classes, we want to find the <em>maximum margin</em> hyperplane, which is the hyperplane with the largest distance even from the closest points: <span id="eq-svm-margin"><span class="math display">\[
 \begin{aligned}
 \max_{\beta,\beta_0,M} M  \\
 \text{s.t. } y_i  \frac{\beta x_i +\beta_0}{\lVert \beta \rVert} \ge M.
@@ -267,7 +274,7 @@ Denote by <span class="math inline">\(\lVert \beta \rVert := (\sum_{j=1}^p \beta
 <h2 class="anchored" data-anchor-id="overlapping-classes">Overlapping classes</h2>
 <p>In general, perfect separation is impossible and we are content to find a “soft”-margin classifier solving the relaxed problem <span id="eq-svm-soft-margin"><span class="math display">\[\begin{aligned}
 \min_{\beta,\beta_0,\xi_i} \frac 12 \lVert \beta \rVert^2 + C \sum_{i=1}^n \xi_i,  \label{eq:rkhs:11}\\
-\text{s.t. } \xi_i \ge 0, \; y_i(x_i \beta +\beta_0) \ge 1-\xi_i, \forall i \notag \end{aligned} \tag{5}\]</span></span> The tuning parameter <span class="math inline">\(C\)</span> controls the softness of the margin. A very large <span class="math inline">\(C\)</span> implies a hard margin and viceversa.</p>
+\text{s.t. } \xi_i \ge 0, \; y_i(x_i \beta +\beta_0) \ge 1-\xi_i, \forall i \notag \end{aligned} \tag{5}\]</span></span> The tuning parameter <span class="math inline">\(C\)</span> controls the softness of the margin, and %(_i)$ are called <em>slack variables</em>. A large <span class="math inline">\(C\)</span> implies less overlap.</p>
 <p><a href="#eq-svm-soft-margin">Equation&nbsp;5</a> can be rewritten as an unconstrained optimization problem, <span id="eq-svm-soft-unconstrained"><span class="math display">\[
 \min_{\beta,\beta_0}  \frac 12 \lVert \beta \rVert^2 +C \sum_i [1- y_i(x_i \beta +\beta_0) ]_+, \tag{6}\]</span></span> or, in the familiar form of minimizing a penalized loss function, <span id="eq-svm-soft-hingeloss"><span class="math display">\[
 \min_{\beta,\beta_0}  \sum_i [1- y_i(x_i \beta +\beta_0) ]_+ + \lambda \lVert \beta \rVert^2, \tag{7}\]</span></span> where <span class="math inline">\([1-y_i h(x_i)]_+:=\max\{1-y_i h(x_i),0\}\)</span> is known as the <em>hinge loss</em>, operating on the margin <span class="math inline">\(y_i h(x_i)=y_i(x_i \beta +\beta_0)\)</span>. It measures the cost of <span class="math inline">\(x_i\)</span> being on the wrong side of the separating hyperplane.</p>
@@ -395,7 +402,7 @@ Denote by <span class="math inline">\(\lVert \beta \rVert := (\sum_{j=1}^p \beta
 </div>
 </div>
 </div>
-<p>For the overlapping observations in <a href="#fig-svm-overlap">Figure&nbsp;2</a>,</p>
+<p><a href="#fig-svm-overlap">Figure&nbsp;2</a> illustrates the SGD and BFGS-based SVM routine applied to overlapping observations:</p>
 <div class="cell" data-execution_count="4">
 <details>
 <summary>Code</summary>
@@ -422,10 +429,10 @@ Denote by <span class="math inline">\(\lVert \beta \rVert := (\sum_{j=1}^p \beta
 </div>
 </div>
 </section>
-<section id="nonlinear-boundaries-and-svms" class="level2">
-<h2 class="anchored" data-anchor-id="nonlinear-boundaries-and-svms">Nonlinear boundaries and SVMs</h2>
-<p>SVCs work well when the boundary between classes is (approximately) linear. SVMs extend SVCs to potentially highly non-linear boundaries via the “kernel trick”. The idea is to map the covariate space <span class="math inline">\(\mathbb{R}^p\)</span> into a higher dimensional space <span class="math inline">\(H\)</span>, and find a separating hyperplane in the bigger space. For example, with 1-dimensional covariates, if observations in class <span class="math inline">\(1\)</span> fall in the interval <span class="math inline">\((-1,1)\)</span> while observations of class <span class="math inline">\(-1\)</span> belong to <span class="math inline">\((-3,-2) \cup (2,3)\)</span>, they cannot be linearly separated (cutting the real line in two). However, if we map the covariate <span class="math inline">\(x\)</span> into a point <span class="math inline">\((x,x^2)\)</span> in a 2-dimensional space, any horizontal line with height between 1 and 4 linearly separates the observations.</p>
-<p>We show in the next section that given a “kernel” function <span class="math inline">\(K: \mathbb{R}^p \times \mathbb{R}^p \rightarrow \mathbb{R}\)</span> with some suitable properties, there exists a (possibly infinitely dimensional) Hilbert space H (the “reproducing kernel Hilbert space (RKHS)”) and a mapping <span class="math inline">\(\Psi\)</span> from the original feature space <span class="math inline">\(\mathbb{R}^p\)</span> to <span class="math inline">\(H\)</span> with the property that the inner products in the new space can be directly calculated using <span class="math inline">\(K\)</span>, <span id="eq-svm-reproducing-property"><span class="math display">\[
+<section id="nonlinear-boundaries" class="level2">
+<h2 class="anchored" data-anchor-id="nonlinear-boundaries">Nonlinear boundaries</h2>
+<p>SVMs can be extended to identify highly non-linear boundaries through <em>kernelization</em> (the “kernel trick”). The idea is to map the covariate space <span class="math inline">\(\mathbb{R}^p\)</span> into a higher dimensional space <span class="math inline">\(H\)</span>, and find a separating hyperplane in the bigger space. For example, with 1-dimensional covariates, if observations in class <span class="math inline">\(1\)</span> fall in the interval <span class="math inline">\((-1,1)\)</span> while observations of class <span class="math inline">\(-1\)</span> belong to <span class="math inline">\((-3,-2) \cup (2,3)\)</span>, they cannot be linearly separated (cutting the real line in two). However, if we map the covariate <span class="math inline">\(x\)</span> into a point <span class="math inline">\((x,x^2)\)</span> in a 2-dimensional space, any horizontal line with height between 1 and 4 linearly separates the observations.</p>
+<p>We show in the next section that given a function <span class="math inline">\(K: \mathbb{R}^p \times \mathbb{R}^p \rightarrow \mathbb{R}\)</span> with some suitable properties (a <em>kernel</em>), there exists a (possibly infinitely dimensional) Hilbert space H (the “reproducing kernel Hilbert space (RKHS)”) and a mapping <span class="math inline">\(\Psi\)</span> from the original feature space <span class="math inline">\(\mathbb{R}^p\)</span> to <span class="math inline">\(H\)</span> with the property that the inner products in the new space have the <em>reproducing property</em> in that they can be directly calculated using <span class="math inline">\(K\)</span>, <span id="eq-svm-reproducing-property"><span class="math display">\[
 \langle \Psi(x),\Psi(y) \rangle = K(x,y).
 \tag{8}\]</span></span></p>
 <p>We solve now <a href="#eq-svm-soft-margin">Equation&nbsp;5</a> in this higher dimensional space, with <span class="math inline">\(x_i\)</span> replaced by <span class="math inline">\(\Psi(x_i)\)</span>. Heuristically, I solve the problem as if it remains finite dimensional. Let <span class="math inline">\((\alpha_i)\)</span> be the Lagrange multipliers for constraints, and <span class="math inline">\(\mu_i\)</span> the multiplier for <span class="math inline">\(\xi_i\)</span>. The Lagrangian is <span id="eq-svm-lagrange"><span class="math display">\[

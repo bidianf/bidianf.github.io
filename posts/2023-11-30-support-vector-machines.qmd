@@ -1,6 +1,8 @@
 ---
 title: Support Vector Machines (SVMs)
-author: Florin Bidian
+author: 
+    name: Florin Bidian
+    affiliations: Northeastern University
 date: 11-30-2023
 categories: [Machine Learning]
 citation:
@@ -12,7 +14,7 @@ format:
         code-fold: true
 ---
 
-Before  neural networks resurfaced as the dominant paradigm, SVMs were among the most researched and popular classifiers. They are rich mathematically and have deep connections with fundamental results in functional analysis. Unlike a logistic regression, they work also when the classes are perfectly separable.
+SVMs are among the most researched and popular classifiers, and have deep connections with fundamental results in functional analysis. Unlike  logistic regression, they work also when the classes are linearly separable, and through _kernelization_, they can identify nonlinear boundaries between classes.
 
 Consider observations $(y_i,x_i)_{i=1}^n$
 with $y \in \{-1,1\}$ being the dependent variable and $x \in \mathbb{R}^p$
@@ -26,9 +28,9 @@ vectors $\beta=(\beta_1,\ldots,\beta_p)$ and $x=(x_1,\ldots,x_p)$.
 A hyperplane divides the $\mathbb{R}^p$ space into two half-spaces.
 SVMs find the hyperplane that "best separates" 
 the two classes $\{-1,1\}$. Roughly,  (most of the) class $1$ observations fall in the half-space $\{x\: |\: h(x)>=0\}$, while (most of the) class $-1$ observations belong to the half-space $\{x \: | \: h(x)<0\}$.  A new observation with covariates $x$ is will be classified as belonging to
-class determined by the sign of $h(x) = \beta x +\beta_0$. While SVMs apply directly only to binary classes, they can be turned into a multiclass classifier using the one-vs-one pairwise classifications of observations, and using majority voting to determine the mist likely class.
+class determined by the sign of $h(x) = \beta x +\beta_0$. While SVMs apply directly only to binary classes, they can be turned into a multiclass classifier using the one-vs-one pairwise classifications of observations, and using majority voting to determine the most likely class.
 
-## Perfectly separated classes
+## Linearly separated classes
 
 The two classes can be perfectly separated by the hyperplane $h$ if $y_i h(x_i) \ge 0$ for all $1 \le i \le n$.  
 Denote by $\lVert \beta \rVert := (\sum_{j=1}^p \beta_j^2)^{1/2}$ the Euclidean norm of $\beta$. The distance from a
@@ -40,7 +42,7 @@ $$
 $$ {#eq-svm-dist}
 
 If $\beta$ is normalized to have unit norm,  $y_i h(x_i)$ is the distance from the observation $(y_i,x_i)$ to the hyperplane, or the _margin_ for this observation. 
-With perfectly separable classes, we want to find the *optimal-margin* hyperplane, which is the hyperplane with the largest distance even from the closest
+With perfectly separable classes, we want to find the *maximum margin* hyperplane, which is the hyperplane with the largest distance even from the closest
 points:
 $$
 \begin{aligned}
@@ -105,7 +107,7 @@ In general, perfect separation is impossible and we are content to find  a "soft
 $$\begin{aligned}
 \min_{\beta,\beta_0,\xi_i} \frac 12 \lVert \beta \rVert^2 + C \sum_{i=1}^n \xi_i,  \label{eq:rkhs:11}\\
 \text{s.t. } \xi_i \ge 0, \; y_i(x_i \beta +\beta_0) \ge 1-\xi_i, \forall i \notag \end{aligned}$$ {#eq-svm-soft-margin}
-The tuning parameter $C$ controls the softness of the margin. A very large $C$ implies a hard margin and viceversa.
+The tuning parameter $C$ controls the softness of the margin, and %(\xi_i)$ are called _slack variables_. A large $C$ implies less overlap.
 
 @eq-svm-soft-margin can be rewritten as an unconstrained optimization problem,
 $$
@@ -204,7 +206,7 @@ Markdown(tabulate(
   headers=["Method","Intercept", "Slope"]
 ))
 ```
-For the overlapping observations in @fig-svm-overlap,
+@fig-svm-overlap illustrates the SGD and BFGS-based SVM routine applied to overlapping observations:
 
 ```{python}
 #| label: fig-svm-overlap
@@ -225,12 +227,12 @@ plt.show()
 ```
 
 
-## Nonlinear boundaries and SVMs
+## Nonlinear boundaries
 
-SVCs work well when the boundary between classes is (approximately) linear. SVMs extend SVCs to potentially highly non-linear boundaries via the "kernel trick". The idea is to map the covariate space $\mathbb{R}^p$ into a higher dimensional space $H$, and find a separating hyperplane in the bigger space. For example, with 1-dimensional covariates, if observations in class $1$ fall in the interval $(-1,1)$ while observations of class $-1$ belong to $(-3,-2) \cup (2,3)$, they cannot be linearly separated (cutting the real line in two). However, if we map the covariate $x$ into a point $(x,x^2)$ in a 2-dimensional space, any horizontal line with height between 1 and 4 linearly separates the observations. 
+SVMs can be extended to identify highly non-linear boundaries through _kernelization_ (the "kernel trick"). The idea is to map the covariate space $\mathbb{R}^p$ into a higher dimensional space $H$, and find a separating hyperplane in the bigger space. For example, with 1-dimensional covariates, if observations in class $1$ fall in the interval $(-1,1)$ while observations of class $-1$ belong to $(-3,-2) \cup (2,3)$, they cannot be linearly separated (cutting the real line in two). However, if we map the covariate $x$ into a point $(x,x^2)$ in a 2-dimensional space, any horizontal line with height between 1 and 4 linearly separates the observations. 
 
 
-We show in the next section that given a "kernel" function $K: \mathbb{R}^p \times \mathbb{R}^p \rightarrow \mathbb{R}$ with some suitable properties, there exists a  (possibly infinitely dimensional) Hilbert space H (the "reproducing kernel Hilbert space (RKHS)") and  a mapping $\Psi$ from the original feature space $\mathbb{R}^p$ to $H$ with the property that the inner products in the new space can be directly calculated using $K$,
+We show in the next section that given a  function $K: \mathbb{R}^p \times \mathbb{R}^p \rightarrow \mathbb{R}$ with some suitable properties (a _kernel_), there exists a  (possibly infinitely dimensional) Hilbert space H (the "reproducing kernel Hilbert space (RKHS)") and  a mapping $\Psi$ from the original feature space $\mathbb{R}^p$ to $H$ with the property that the inner products in the new space have the _reproducing property_ in that they can be directly calculated using $K$,
 $$
 \langle \Psi(x),\Psi(y) \rangle = K(x,y).
 $$ {#eq-svm-reproducing-property}
@@ -256,7 +258,7 @@ $$\begin{aligned}
 \text{s.t. } \sum_i \alpha_i y_i =0,  0 \le \alpha_i \le C \quad \forall i .\end{aligned}$$ {#eq-svm-dual}
 
 Dedicated optimization routines easily handle such
-quadratic problems with linear and box constraints. @fig-svm-nonlinear  illustrates how a SVM with radial kernel
+quadratic problems with linear and box constraints.  @fig-svm-nonlinear  illustrates how a SVM with radial kernel
 $$
 K(x,y) = \exp(- \lVert x-y \rVert /(2\sigma^2))
 $$ {#eq-svm-radial-kernel}
