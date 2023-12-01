@@ -12,7 +12,7 @@ format:
         code-fold: true
 ---
 
-Before the recent resurrection of neural networks and their success, SVMs were the some of the most popular classifiers in the machine learning community. The math behind them is rich and connects to results in functional analysis such as the Mercer theorem and Reproducing Hilbert Kernel Space. Unlike a logistic regression, they have no problems handling situations where the classes are perfectly separated.
+Before  neural networks resurfaced as the dominant paradigm, SVMs were among the most researched and popular classifiers. They are rich mathematically and have deep connections with fundamental results in functional analysis. Unlike a logistic regression, they work also when the classes are perfectly separable.
 
 Consider observations $(y_i,x_i)_{i=1}^n$
 with $y \in \{-1,1\}$ being the dependent variable and $x \in \mathbb{R}^p$
@@ -26,13 +26,11 @@ vectors $\beta=(\beta_1,\ldots,\beta_p)$ and $x=(x_1,\ldots,x_p)$.
 A hyperplane divides the $\mathbb{R}^p$ space into two half-spaces.
 SVMs find the hyperplane that "best separates" 
 the two classes $\{-1,1\}$. Roughly,  (most of the) class $1$ observations fall in the half-space $\{x\: |\: h(x)>=0\}$, while (most of the) class $-1$ observations belong to the half-space $\{x \: | \: h(x)<0\}$.  A new observation with covariates $x$ is will be classified as belonging to
-class determined by the sign of $h(x) = \beta x +\beta_0$.
+class determined by the sign of $h(x) = \beta x +\beta_0$. While SVMs apply directly only to binary classes, they can be turned into a multiclass classifier using the one-vs-one pairwise classifications of observations, and using majority voting to determine the mist likely class.
 
 ## Perfectly separated classes
 
 The two classes can be perfectly separated by the hyperplane $h$ if $y_i h(x_i) \ge 0$ for all $1 \le i \le n$.  
-
-
 Denote by $\lVert \beta \rVert := (\sum_{j=1}^p \beta_j^2)^{1/2}$ the Euclidean norm of $\beta$. The distance from a
 point $x$ to the hyperplane $h$ can be calculated by selecting a point $x_0$
 belonging to the hyperplane and projecting $x-x_0$ on the unit norm
