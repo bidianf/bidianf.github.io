@@ -1,0 +1,28 @@
+---
+title: "Florin Bidian"
+image: FlorinBidian.jpg
+toc: false
+about: 
+  template: solana
+  image-shape: rectangle
+  
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/florin-bidian/
+    - icon: github
+      text: GitHub
+      href: https://github.com/bidianf
+    - icon: google
+      text: Web
+      href: https://sites.google.com/view/florinbidian/
+---
+
+
+I am a Professor of the Practice in Economics and Data Science at Northeastern University, Seattle. A recent resume is available [here](cv.pdf). 
+
+### Education
+PhD in Economics, 2011, University of Minnesota
+
+### Interests
+Economics, Statistics, Machine Learning, Applied Mathematics

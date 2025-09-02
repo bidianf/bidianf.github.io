@@ -1,0 +1,11 @@
+---
+title: "Blog"
+listing: 
+  contents: posts # all Quarto docs in the `posts` directory 
+  type: default # or `grid` or `table`
+  sort: "date desc" # can also sort on more than one field
+  categories: true # allows you to sort posts by assigned categories
+---
+
+ > "A picture may be worth a thousand words, a formula is worth a thousand pictures" [(Edsger Dijkstra)](https://en.wikipedia.org/wiki/Edsger_W._Dijkstra). 
+
